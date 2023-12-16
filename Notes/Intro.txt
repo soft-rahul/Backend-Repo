@@ -1,0 +1,11 @@
+* Frontend Vs Backend
+
+Frontend - 
+    - HTML (Markup)
+    - CSS (Presentation)
+    - JS (Interactivity)
+
+
+Backend 
+    - Server Side Programming Language
+    - Database
