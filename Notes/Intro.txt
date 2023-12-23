@@ -8,4 +8,6 @@ Frontend -
 
 Backend 
     - Server Side Programming Language
+    - app
+    - query Language
     - Database
