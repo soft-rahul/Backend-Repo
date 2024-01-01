@@ -356,3 +356,50 @@ If an error occurs, and there’s no .catch, the unhandledrejection handler trig
 Usually such errors are unrecoverable, so our best way out is to inform the user about the problem and probably report the incident to the server.
 
 In non-browser environments like Node.js there are other ways to track unhandled errors.
+
+
+# Promise API
+
+There are 6 static methods in the Promise class.
+
+## Promise.all()
+
+Let’s say we want many promises to execute in parallel and wait until all of them are ready.
+
+For instance, download several URLs in parallel and process the content once they are all done.
+
+That’s what Promise.all is for.
+
+The syntax is:
+<pre> <code>
+let promise = Promise.all(iterable);
+Promise.all takes an iterable (usually, an array of promises) and returns a new promise.
+</code> </pre>
+The new promise resolves when all listed promises are resolved, and the array of their results becomes its result.
+
+For instance, the Promise.all below settles after 3 seconds, and then its result is an array [1, 2, 3]:
+
+<pre> <code>
+Promise.all([
+  new Promise(resolve => setTimeout(() => resolve(1), 3000)), // 1
+  new Promise(resolve => setTimeout(() => resolve(2), 2000)), // 2
+  new Promise(resolve => setTimeout(() => resolve(3), 1000))  // 3
+]).then(alert); // 1,2,3 when promises are ready: each promise contributes an array member
+</code> </pre>
+Please note that the order of the resulting array members is the same as in its source promises. Even though the first promise takes the longest time to resolve, it’s still first in the array of results.
+
+#### If any of the promises is rejected, the promise returned by Promise.all immediately rejects with that error.
+
+![](../Images/Screenshot%20(546).png)
+
+
+## Promise.allSettled
+
+Promise.allSettled just waits for all promises to settle, regardless of the result. The resulting array has:
+<pre> 
+<code>
+{status:"fulfilled", value:result} for successful responses,
+{status:"rejected", reason:error} for errors.
+
+</code>
+</pre>
