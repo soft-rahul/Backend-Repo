@@ -116,6 +116,7 @@ Its arguments <b> resolve </b> and <b> reject </b>are callbacks provided by Java
 So to summarize: the executor runs automatically and attempts to perform a job. When it is finished with the attempt, it calls resolve if it was successful or reject if there was an error.
 
 ### Return value of Promise constructor
+![](../Images/Screenshot%20(540).png)
 The promise object returned by the new Promise constructor has these internal properties:
 
 <b>state</b> — initially "pending", then changes to either "fulfilled" when resolve is called or "rejected" when reject is called.
@@ -140,6 +141,8 @@ Also, resolve/reject expect only one argument (or none) and will ignore addition
 
 ### then() & catch()
 A Promise object serves as a link between the executor (“producing code”) and the consuming functions , which will receive the result or error. Consuming functions can be registered using the methods <b>.then and .catch. </b>
+
+![](../Images/Screenshot%20(541).png)
 
 ### .then()
 The most important, fundamental one is .then.
@@ -171,3 +174,4 @@ To summarize:
 - If a finally handler returns something, it’s ignored.
   
 - When finally throws an error, then the execution goes to the nearest error handler.
+
