@@ -296,3 +296,63 @@ Returning promises allows us to build chains of asynchronous actions.
 #### As a good practice, an asynchronous action should always return a promise. That makes it possible to plan actions after it; even if we don’t plan to extend the chain now, we may need it later.
 
 ![](../Images/Screenshot%20(545).png)
+
+
+## Error handling with promises
+
+
+Promise chains are great at error handling. When a promise rejects, the control jumps to the closest rejection handler. That’s very convenient in practice.
+
+For instance, in the code below the URL to fetch is wrong (no such site) and .catch handles the error:
+
+<pre> <code>
+fetch('https://no-such-server.blabla') // rejects
+  .then(response => response.json())
+  .catch(err => alert(err)) // TypeError: failed to fetch (the text may vary)
+</code> </pre>
+As you can see, the .catch doesn’t have to be immediate. It may appear after one or maybe several .then.
+
+
+## Re-throwing Error
+
+## Unhandled rejections
+What happens when an error is not handled? For instance, we forgot to append .catch to the end of the chain, like here:
+
+<pre> <code>
+new Promise(function() {
+  noSuchFunction(); // Error here (no such function)
+})
+  .then(() => {
+    // successful promise handlers, one or more
+  }); // without .catch at the end!
+
+ </code> </pre> 
+In case of an error, the promise becomes rejected, and the execution should jump to the closest rejection handler. But there is none. So the error gets “stuck”. There’s no code to handle it.
+
+In practice, just like with regular unhandled errors in code, it means that something has gone terribly wrong.
+
+What happens when a regular error occurs and is not caught by try..catch? The script dies with a message in the console. A similar thing happens with unhandled promise rejections.
+
+The JavaScript engine tracks such rejections and generates a global error in that case. You can see it in the console if you run the example above.
+
+In the browser we can catch such errors using the event unhandledrejection:
+
+<pre> <code>
+window.addEventListener('unhandledrejection', function(event) {
+  // the event object has two special properties:
+  alert(event.promise); // [object Promise] - the promise that generated the error
+  alert(event.reason); // Error: Whoops! - the unhandled error object
+});
+
+new Promise(function() {
+  throw new Error("Whoops!");
+}); // no catch to handle the error
+The event is the part of the HTML standard.
+
+</code> </pre>
+
+If an error occurs, and there’s no .catch, the unhandledrejection handler triggers, and gets the event object with the information about the error, so we can do something.
+
+Usually such errors are unrecoverable, so our best way out is to inform the user about the problem and probably report the incident to the server.
+
+In non-browser environments like Node.js there are other ways to track unhandled errors.
