@@ -175,3 +175,121 @@ To summarize:
   
 - When finally throws an error, then the execution goes to the nearest error handler.
 
+## Promises Chaining
+
+It looks like this:
+<pre>
+<code>
+new Promise(function(resolve, reject) {
+
+  setTimeout(() => resolve(1), 1000); // (*)
+
+}).then(function(result) { // (**)
+
+  alert(result); // 1
+  return result * 2;
+
+}).then(function(result) { // (***)
+
+  alert(result); // 2
+  return result * 2;
+
+}).then(function(result) {
+
+  alert(result); // 4
+  return result * 2;
+
+});
+</code>
+</pre>
+The idea is that the result is passed through the chain of .then handlers.
+
+Here the flow is:
+
+![](../Images/Screenshot%20(543).png)
+
+* The initial promise resolves in 1 second (1*),
+* Then the .then handler is called (2*), which in turn creates a new promise (resolved with 2 value).
+* The next then (***) gets the result of the previous one, processes it (doubles) and passes it to the next handler.
+…and so on.
+
+As the result is passed along the chain of handlers, we can see a sequence of alert calls: 1 → 2 → 4.
+
+
+The whole thing works, because every call to a .then returns a new promise, so that we can call the next .then on it.
+
+When a handler returns a value, it becomes the result of that promise, so the next .then is called with it.
+
+A classic newbie error: technically we can also add many .then to a single promise. This is not chaining.
+
+For example:
+<pre><code>
+let promise = new Promise(function(resolve, reject) {
+  setTimeout(() => resolve(1), 1000);
+});
+
+promise.then(function(result) {
+  alert(result); // 1
+  return result * 2;
+});
+
+promise.then(function(result) {
+  alert(result); // 1
+  return result * 2;
+});
+
+promise.then(function(result) {
+  alert(result); // 1
+  return result * 2;
+});
+</code> </pre>
+What we did here is just adding several handlers to one promise. They don’t pass the result to each other; instead they process it independently.
+
+Here’s the picture (compare it with the chaining above):
+![](../Images/Screenshot%20(544).png)
+
+
+All .then on the same promise get the same result – the result of that promise. So in the code above all alert show the same: 1.
+
+In practice we rarely need multiple handlers for one promise. Chaining is used much more often.
+
+
+## Returning promises
+A handler, used in .then(handler) may create and return a promise.
+
+In that case further handlers wait until it settles, and then get its result.
+
+For instance:
+<pre> <code>
+new Promise(function(resolve, reject) {
+
+  setTimeout(() => resolve(1), 1000);
+
+}).then(function(result) {
+
+  alert(result); // 1
+
+  return new Promise((resolve, reject) => { // (*)
+    setTimeout(() => resolve(result * 2), 1000);
+  });
+
+}).then(function(result) { // (**)
+
+  alert(result); // 2
+
+  return new Promise((resolve, reject) => {
+    setTimeout(() => resolve(result * 2), 1000);
+  });
+
+}).then(function(result) {
+
+  alert(result); // 4
+
+});
+</code> </pre>
+Here the first .then shows 1 and returns new Promise(…) in the line (*). After one second it resolves, and the result (the argument of resolve, here it’s result * 2) is passed on to the handler of the second .then. That handler is in the line (**), it shows 2 and does the same thing.
+
+So the output is the same as in the previous example: 1 → 2 → 4, but now with 1 second delay between alert calls.
+
+Returning promises allows us to build chains of asynchronous actions.
+
