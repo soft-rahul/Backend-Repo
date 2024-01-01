@@ -293,3 +293,6 @@ So the output is the same as in the previous example: 1 → 2 → 4, but now wit
 
 Returning promises allows us to build chains of asynchronous actions.
 
+#### As a good practice, an asynchronous action should always return a promise. That makes it possible to plan actions after it; even if we don’t plan to extend the chain now, we may need it later.
+
+![](../Images/Screenshot%20(545).png)
