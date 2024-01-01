@@ -1,1 +1,0 @@
-const intro = () => console.log('I am loaded and running!');

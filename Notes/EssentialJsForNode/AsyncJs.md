@@ -1,3 +1,13 @@
+# What is Nodejs?
+## Node js is a open-source, free, async and event driven js runtime env.
+## It uses JS V8-engine.
+## It is very fast.
+## We can use latest JS features in nodejs without any problem.
+
+### How to install and Manage Nodejs?
+ We can use nvm tool for this.
+
+
 # What is Asynchronous Programming in Js?
 
 <p> Asynchronous programming is a technique that enables your program to start a potentially long-running task and still be able to be responsive to other events while that task runs, rather than having to wait until that task has finished. Once that task has finished, your program is presented with the result. </p>
@@ -46,6 +56,41 @@ This method returns an interval ID which uniquely identifies the interval, so yo
 # Asynchronous Techniques
 
 ## Callbacks
+
+# Understanding Callbacks
+Callbacks are just functions.
+
+## Types of function
+### 1. function Declaration
+<pre>
+<code>
+    function fnName(para1,para2) {
+        // function body
+    }
+</code>
+</pre>
+
+### 2. function expression
+<pre>
+<code>
+    const fn = function() {
+
+    }
+
+</code>
+</pre>
+            or
+
+<pre>
+<code>
+    const fn = () => {
+        // body of function
+    }
+</code>
+</pre>
+
+### 3. Callback functions
+#### Callbacks are just functions passed into other functions as arguments
 
 ## Promise
 
