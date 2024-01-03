@@ -471,3 +471,94 @@ value (if fulfilled) or reason (if rejected).
 * Promise.resolve(value) – makes a resolved promise with the given value.
 * Promise.reject(error) – makes a rejected promise with the given error.
 Of all these, Promise.all is probably the most common in practice.
+
+## Promisification
+“Promisification” is a long word for a simple transformation. It’s the conversion of a function that accepts a callback into a function that returns a promise.
+
+
+## Micro tasks
+Promise handlers .then/.catch/.finally are always asynchronous.
+
+Even when a Promise is immediately resolved, the code on the lines below .then/.catch/.finally will still execute before these handlers.
+
+Here’s a demo:
+<pre> <code>
+let promise = Promise.resolve();
+
+promise.then(() => alert("promise done!"));
+
+alert("code finished"); // this alert shows first
+</code></pre>
+If you run it, you see code finished first, and then promise done!.
+
+That’s strange, because the promise is definitely done from the beginning.
+
+
+## Microtasks queue
+![Alt text](image-2.png)
+Asynchronous tasks need proper management. For that, the ECMA standard specifies an internal queue PromiseJobs, more often referred to as the “microtask queue” (V8 term).
+
+As stated in the specification:
+
+The queue is first-in-first-out: tasks enqueued first are run first.
+Execution of a task is initiated only when nothing else is running.
+Or, to put it more simply, when a promise is ready, its .then/catch/finally handlers are put into the queue; they are not executed yet. When the JavaScript engine becomes free from the current code, it takes a task from the queue and executes it.
+
+That’s why “code finished” in the example above shows first.
+
+![Alt text](image-1.png)
+
+Promise handlers always go through this internal queue.
+
+If there’s a chain with multiple .then/catch/finally, then every one of them is executed asynchronously. That is, it first gets queued, then executed when the current code is complete and previously queued handlers are finished.
+
+
+## Async & Await
+
+### Async functions
+Let’s start with the async keyword. It can be placed before a function, like this:
+
+<pre>
+<code>
+async function f() {
+  return 1;
+}
+</code>
+</pre>
+
+The word “async” before a function means one simple thing: a function always returns a promise. Other values are wrapped in a resolved promise automatically.
+
+### Await
+The syntax:
+
+<pre> <code>
+// works only inside async functions
+let value = await promise;
+</code> </pre>
+
+The keyword await makes JavaScript wait until that promise settles and returns its result.
+
+Here’s an example with a promise that resolves in 1 second:
+
+<pre> <code>
+async function f() {
+
+  let promise = new Promise((resolve, reject) => {
+    setTimeout(() => resolve("done!"), 1000)
+  });
+
+  let result = await promise; // wait until the promise resolves (*)
+
+  alert(result); // "done!"
+}
+
+f();
+
+</code> </pre>
+The function execution “pauses” at the line (*) and resumes when the promise settles, with result becoming its result. So the code above shows “done!” in one second.
+
+Let’s emphasize: await literally suspends the function execution until the promise settles, and then resumes it with the promise result. That doesn’t cost any CPU resources, because the JavaScript engine can do other jobs in the meantime: execute other scripts, handle events, etc.
+
+It’s just a more elegant syntax of getting the promise result than promise.then. And, it’s easier to read and write.
+
+![Alt text](image-3.png)
